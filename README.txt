@@ -1,18 +1,26 @@
-AI Bell v3 — Local AI iPhone/Android web app
+AI Bell v4
 
-Fixed in v3:
-- Fixed the chat input/button IDs.
-- Prevented the composer form from reloading the page when Send is pressed.
-- Fixed New Chat/Delete Chat button wiring.
-- Keeps chat history in localStorage.
-- Uses WebLLM for local on-device AI through WebGPU.
+This version is made for iPhones/browsers that do NOT have WebGPU.
+It uses Hugging Face Transformers.js with ONNX Runtime WebAssembly (CPU), so WebGPU is not required.
 
-How to update GitHub Pages:
-1. Replace index.html and app.js in the AI-Bell repository with the v3 files.
-2. Commit changes.
-3. Refresh the AI Bell site.
-4. Press Load AI. The model should be reused from browser cache after its first download.
-5. Send a message. The page should no longer refresh.
+Model:
+onxx-community/Qwen2.5-0.5B-Instruct (q8 / WASM)
 
-Note:
-WebLLM requires a browser with WebGPU support. The model itself is cached locally by the browser after download.
+First AI load downloads the local model. This can be several hundred MB and may take time on a phone.
+After loading, the model is cached by the browser when supported.
+
+Important fixes from v3:
+- No WebGPU requirement.
+- Working three-line menu button (☰) at top-left.
+- Working sidebar open/close and scrim.
+- Working New Chat, chat history, and Delete current chat.
+- Fixed form submit/reload issue.
+- Hidden <think> blocks from the visible chat.
+- Sorani Kurdish / English / Arabic support prompt.
+
+To update GitHub Pages, replace these files at the repository root:
+- index.html
+- app.js
+- style.css
+
+Keep manifest.json as it is.

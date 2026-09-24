@@ -13,33 +13,33 @@
 </head>
 <body>
   <div class="app">
-    <aside id="sidebar" class="sidebar">
+    <aside id="sidebar" class="sidebar" aria-label="Chat history">
       <div class="side-top">
-        <button id="closeSidebar" class="icon-btn" aria-label="Close">×</button>
-        <button id="new-chat" class="new-chat">＋ New chat</button>
+        <button id="closeSidebar" class="icon-btn" type="button" aria-label="Close menu">×</button>
+        <button id="new-chat" class="new-chat" type="button">＋ New chat</button>
       </div>
       <div id="chat-list" class="history"></div>
       <div class="side-bottom">
         <div class="brand-mini"><span class="bell">●</span> AI Bell</div>
-        <button id="delete-chat" class="danger-btn">Delete current chat</button>
+        <button id="delete-chat" class="danger-btn" type="button">Delete current chat</button>
       </div>
     </aside>
 
-    <div id="scrim" class="scrim"></div>
+    <div id="scrim" class="scrim" aria-hidden="true"></div>
 
     <div class="ai-toolbar">
-      <button id="load-ai" class="ai-load">Load AI</button>
+      <button id="load-ai" class="ai-load" type="button">Load AI</button>
       <span id="ai-status" class="ai-status">AI not loaded</span>
     </div>
 
     <main class="main">
       <header class="header">
-        <button id="openSidebar" class="icon-btn" aria-label="Open menu">☰</button>
+        <button id="openSidebar" class="icon-btn" type="button" aria-label="Open menu">☰</button>
         <div class="title">AI Bell</div>
-        <button id="new-chat-top" class="icon-btn" aria-label="New chat">＋</button>
+        <button id="new-chat-top" class="icon-btn" type="button" aria-label="New chat">＋</button>
       </header>
 
-      <section id="messages" class="messages"></section>
+      <section id="messages" class="messages" aria-live="polite"></section>
 
       <form id="composer" class="composer-wrap" novalidate>
         <div class="composer">
