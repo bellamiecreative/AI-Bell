@@ -1,11 +1,8 @@
-// AI Bell v2 — real local AI with WebLLM
-// The model runs in the browser on the iPhone; no API key is used.
-
+// AI Bell v3 — fixed chat form/reload bug + real local WebLLM AI
 import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
 
 const MODEL_ID = "Qwen3-0.6B-q4f16_1-MLC";
-const STORAGE_KEY = "ai-bell-chats-v2";
-const MODEL_STATE_KEY = "ai-bell-model-state-v2";
+const STORAGE_KEY = "ai-bell-chats-v3";
 
 let engine = null;
 let loading = false;
@@ -27,7 +24,11 @@ function loadChats() {
 }
 
 function saveChats() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
+  } catch (e) {
+    console.warn("Could not save chat history:", e);
+  }
 }
 
 function currentChat() {
@@ -58,6 +59,7 @@ function renderChats() {
     const row = document.createElement("button");
     row.className = "chat-item" + (chat.id === activeChatId ? " active" : "");
     row.textContent = chat.title || "New chat";
+    row.type = "button";
     row.onclick = () => {
       activeChatId = chat.id;
       renderAll();
@@ -123,8 +125,9 @@ function updateModelUI() {
 
 async function loadAI() {
   if (engine || loading) return;
+
   if (!("gpu" in navigator)) {
-    setStatus("WebGPU is not available. Update iPhone/iOS or try Safari 26+.", "error");
+    setStatus("WebGPU is not available on this browser.", "error");
     return;
   }
 
@@ -144,12 +147,11 @@ async function loadAI() {
       }
     });
 
-    localStorage.setItem(MODEL_STATE_KEY, "ready");
     setStatus("Local AI ready", "ready");
   } catch (err) {
-    console.error(err);
+    console.error("WebLLM load error:", err);
     engine = null;
-    setStatus("AI could not load on this device/browser. Try Safari 26+ and reload.", "error");
+    setStatus("AI could not load. Please try Load AI again.", "error");
   } finally {
     loading = false;
     updateModelUI();
@@ -169,14 +171,16 @@ async function sendMessage() {
   if (!text || loading) return;
 
   ensureChat();
-  const chat = currentChat();
 
+  // If the model was unloaded after a page/browser restart, reload it from cache.
   if (!engine) {
     await loadAI();
     if (!engine) return;
   }
 
+  const chat = currentChat();
   input.value = "";
+
   chat.messages.push({ role: "user", content: text });
   if (chat.title === "New chat") {
     chat.title = text.slice(0, 32) + (text.length > 32 ? "…" : "");
@@ -185,7 +189,6 @@ async function sendMessage() {
   saveChats();
   renderAll();
 
-  // Temporary assistant bubble for streaming.
   chat.messages.push({ role: "assistant", content: "" });
   renderMessages();
 
@@ -212,9 +215,9 @@ async function sendMessage() {
       saveChats();
     }
   } catch (err) {
-    console.error(err);
+    console.error("Generation error:", err);
     chat.messages[chat.messages.length - 1].content =
-      "Sorry — the local AI stopped. Please try again.";
+      "Sorry — the local AI stopped. Please press Load AI and try again.";
     saveChats();
     renderMessages();
   }
@@ -241,12 +244,21 @@ document.addEventListener("DOMContentLoaded", () => {
   ensureChat();
 
   $("new-chat")?.addEventListener("click", newChat);
+  $("new-chat-top")?.addEventListener("click", newChat);
   $("delete-chat")?.addEventListener("click", deleteCurrentChat);
   $("load-ai")?.addEventListener("click", loadAI);
-  $("send-btn")?.addEventListener("click", sendMessage);
+
+  // IMPORTANT: prevent the browser's normal form submit/reload.
+  $("composer")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    sendMessage();
+  });
+
   $("message-input")?.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+      e.stopPropagation();
       sendMessage();
     }
   });
