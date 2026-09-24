@@ -113,26 +113,24 @@ async function sendMessage(){
   generating=true; $("send-btn").disabled=true; setStatus("AI is thinking…","ready");
   try{
     const history=[{role:"system",content:systemPrompt()},...chat.messages.slice(0,-1)];
-    // Build a chat-formatted prompt explicitly. This avoids streamer/runtime issues on iPhone WASM.
-    let prompt;
-    try{
-      prompt=generator.tokenizer.apply_chat_template(history,{tokenize:false,add_generation_prompt:true});
-    }catch{
-      prompt=history.map(m=>`${m.role}: ${m.content}`).join("\n")+"\nassistant:";
-    }
-    const output=await generator(prompt,{
-      max_new_tokens:160, do_sample:true, temperature:0.7, top_p:0.9,
+    // Use Transformers.js chat-message input directly. This is more reliable on iPhone WASM.
+    const output=await generator(history,{
+      max_new_tokens:96,
+      do_sample:false,
       repetition_penalty:1.05
     });
     let answer="";
     if(Array.isArray(output) && output[0]){
-      const raw=output[0].generated_text;
-      answer=typeof raw==="string"?raw:"";
+      const generated=output[0].generated_text;
+      if(Array.isArray(generated)){
+        const last=generated[generated.length-1];
+        answer=typeof last?.content==="string"?last.content:"";
+      }else if(typeof generated==="string"){
+        answer=generated;
+      }
     }
-    // Remove the prompt if the runtime returns prompt + completion.
-    if(answer && prompt && answer.startsWith(prompt)) answer=answer.slice(prompt.length);
     answer=cleanAnswer(answer);
-    if(!answer) answer="I'm sorry, I couldn't generate a response. Please try again.";
+    if(!answer) answer="I couldn't generate a response. Please try again.";
     chat.messages[chat.messages.length-1].content=answer;
     chat.updatedAt=Date.now(); saveChats(); renderMessages();
   }catch(err){
