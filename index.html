@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#212121">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AI Bell">
+  <title>AI Bell</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <aside id="sidebar" class="sidebar">
+      <div class="side-top">
+        <button id="closeSidebar" class="icon-btn" aria-label="Close">×</button>
+        <button id="newChatSide" class="new-chat">＋ New chat</button>
+      </div>
+      <div id="history" class="history"></div>
+      <div class="side-bottom">
+        <div class="brand-mini"><span class="bell">●</span> AI Bell</div>
+        <button id="clearAll" class="danger-btn">Clear all chats</button>
+      </div>
+    </aside>
+
+    <div id="scrim" class="scrim"></div>
+
+    <div class="ai-toolbar"><button id="load-ai" class="ai-load">Load AI</button><span id="ai-status" class="ai-status">AI not loaded</span></div>
+<main class="main">
+      <header class="header">
+        <button id="openSidebar" class="icon-btn" aria-label="Open menu">☰</button>
+        <div class="title">AI Bell</div>
+        <button id="newChat" class="icon-btn" aria-label="New chat">＋</button>
+      </header>
+
+      <section id="messages" class="messages">
+        <div id="welcome" class="welcome">
+          <div class="logo">B</div>
+          <h1>How can I help you?</h1>
+          <p>AI Bell</p>
+        </div>
+      </section>
+
+      <form id="composer" class="composer-wrap">
+        <div class="composer">
+          <textarea id="input" rows="1" placeholder="Message AI Bell..." autocomplete="off"></textarea>
+          <button id="send" class="send" type="submit" aria-label="Send">↑</button>
+        </div>
+        <div class="hint">AI Bell can make mistakes. Check important information.</div>
+      </form>
+    </main>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

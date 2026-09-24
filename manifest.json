@@ -1,0 +1,9 @@
+{
+  "name":"AI Bell",
+  "short_name":"AI Bell",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#ffffff",
+  "theme_color":"#212121",
+  "description":"AI Bell — private text AI chat"
+}
