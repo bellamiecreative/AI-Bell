@@ -1,8 +1,8 @@
-// AI Bell v4 — iPhone CPU/WASM local AI + working menu
+// AI Bell v5 — iPhone CPU/WASM local AI + working menu
 import { pipeline, TextStreamer } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/+esm";
 
-const MODEL_ID = "onnx-community/Qwen2.5-0.5B-Instruct";
-const STORAGE_KEY = "ai-bell-chats-v4";
+const MODEL_ID = "onnx-community/SmolLM2-135M-Instruct-ONNX";
+const STORAGE_KEY = "ai-bell-chats-v5";
 
 let generator = null;
 let loading = false;
@@ -139,13 +139,16 @@ async function loadAI() {
     // Transformers.js uses WebAssembly/CPU by default. This path does NOT require WebGPU.
     generator = await pipeline("text-generation", MODEL_ID, {
       device: "wasm",
-      dtype: "q8",
+      dtype: "q4f16",
       progress_callback: (p) => {
         if (p && typeof p.progress === "number") {
-          const pct = Math.round(p.progress * 100);
+          const raw = p.progress <= 1 ? p.progress * 100 : p.progress;
+          const pct = Math.max(0, Math.min(100, Math.round(raw)));
           setStatus(`Loading local AI… ${pct}%`, "");
         } else if (p?.status === "progress" && typeof p.progress === "number") {
-          setStatus(`Loading local AI… ${Math.round(p.progress)}%`, "");
+          const raw = p.progress <= 1 ? p.progress * 100 : p.progress;
+          const pct = Math.max(0, Math.min(100, Math.round(raw)));
+          setStatus(`Loading local AI… ${pct}%`, "");
         } else if (p?.status === "initiate") {
           setStatus("Preparing local AI…", "");
         }
